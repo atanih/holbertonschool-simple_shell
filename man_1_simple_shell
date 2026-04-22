@@ -1,0 +1,55 @@
+.\" man page for our shell - hsh
+.TH HSH 1 "April 2026" "Holberton simple_shell" "User Commands"
+.SH NAME
+hsh \- simple UNIX command line interpreter
+.SH SYNOPSIS
+.B hsh
+.PP
+If you run it as
+.BR ./hsh
+(or any other path), that name shows up as
+.BR argv[0]
+in errors, same as usual.
+.SH DESCRIPTION
+.B hsh
+is a small shell: read a line, split into words, run something. Built-ins stay
+in the parent; everything else we look up with
+.BR PATH
+or treat as a path, then
+.BR fork (2)
++
+.BR execve (2).
+Parent waits on the kid before the next prompt.
+.PP
+Interactive mode (stdin is a tty): we print a
+.B ($)
+prompt each time. Non-interactive: no prompt, we quit at EOF on
+.B standart
+input.
+.SH "BUILT-IN COMMANDS"
+.TP
+.BR exit
+Leave the shell. Extra arguments are not requred for this version.
+.TP
+.BR env
+Dump the environment,
+.B name=value
+one per line.
+.SH "ENVIRONMENT"
+Kids get the same env through
+.BR execve;
+.B env
+just prints it.
+.B PATH
+is what we use for lookups.
+.SH "EXIT STATUS"
+0 when the main loop ends normally (EOF on stdin);
+.B exit
+also ends with 0 here.
+.SH BUGS
+No pipes, no redirects, no real quoting. Not trying to clone
+.BR sh.
+.SH AUTHOR
+See
+.B AUTHORS
+in the repo root.

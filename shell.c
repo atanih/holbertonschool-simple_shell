@@ -18,17 +18,8 @@ read_len = getline(&line, &len, stdin);
 
 if (read_len == -1)
 {
-if (feof(stdin))
-{
 free(line);
 exit(EXIT_SUCCESS);
-}
-else
-{
-perror("getline");
-free(line);
-exit(EXIT_FAILURE);
-}
 }
 
 if (read_len > 0 && line[read_len - 1] == '\n')
@@ -68,7 +59,7 @@ pos++;
 if (pos >= bufsize)
 {
 bufsize += BUFSIZE;
-tokens = realloc(tokens, bufsize *sizeof(char *));
+tokens = realloc(tokens, bufsize * sizeof(char *));
 if (!tokens)
 {
 perror("realloc");
@@ -93,7 +84,6 @@ return (tokens);
 *
 * Return: Always returns 1 (for shell loop continuation)
 */
-
 int launch(char **args)
 {
 pid_t pid;
@@ -133,7 +123,6 @@ return (1);
 *
 * Return: Status of the launched process (1 for normal execution)
 */
-
 int execute(char **args)
 {
 if (args[0] == NULL)

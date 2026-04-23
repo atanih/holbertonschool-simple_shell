@@ -1,65 +1,76 @@
-.\" Man page for hsh - Holberton simple_shell (still wiring things up)
+.\" hsh - holberton simple_shell
 .TH HSH 1 "April 2026" "holbertonschool-simple_shell" "User Commands"
 .SH NAME
 hsh \- small UNIX command-line interpreter
 .SH SYNOPSIS
 .B hsh
 .PP
-Whatever path you use to start it (say
+The string you used to launch the program (e.g.
 .BR ./hsh )
-shows up as
+is what shows up as
 .BR argv[0]
-when something goes wrong.
+in error messages.
 .SH DESCRIPTION
 .B hsh
-is our Holberton
+is the Holberton
 .B simple_shell
-project: a tiny shell in C. Right now we are mainly getting the repo in order (README, this page,
-.BR AUTHORS ,
-that kind of thing), but the idea is straightforward: read a line, break it into words, run the command. Built-ins stay in the parent; everything else gets
+assignement boiled down to something that actualy runs: read a line with
+.BR getline (3),
+split it into words, then either handle a built-in in the parent or
 .BR fork (2)
-/
+and
 .BR execve (2)
-with the real environment, and we wait on the child before drawing another prompt. Bare names should eventually resolve through
-.BR PATH ;
-full paths work when you type them.
+in a child. The environment you started with is what we pass through; nothing magic.
 .PP
-Interactive: stdin is a tty, so you get a prompt each time. Non-interactive: no prompt, and we stop at EOF on stdin.
+Interactive sessions (stdin is a tty) print
+.B "($) "
+before each read. Piped or scripted input gets no prompt. End of file on stdin exits the shell; in interactive mode we print a newline first so the termnal does not look stuck.
 .PP
-Build instructions and compiler flags are in
+Commands without a slash in the name are looked up using
+.BR PATH .
+Full paths run as-is when the file is executable. Unknown commands print
+.BI argv0 ": " line ": " command ": not found"
+to stderr, with a line counter that starts at 1 and ticks every time we accept a line (built-ins and empty parses still advance it when we loop).
+.PP
+How to compile and which flags the school wants are in
 .B README.md
-at the repo root; check there before you assume anything about the build.
+at the repo root; this page is just how the binary behaves once built.
 .SH "BUILT-IN COMMANDS"
 .TP
 .BR exit
-Quit the shell. Extra arguments to
+Leave
+.B hsh .
+We do not need to handle arguments to
 .B exit
-are out of scope for what we are being graded on.
+for this project version.
 .TP
 .BR env
-Print the environment,
+Dump the current
+.B enviroment
+(one
 .B name=value
-one line at a time.
+per line, same order we walk the pointer array).
 .SH ENVIRONMENT
-Same env the process started with gets handed to child processes via
+Inherited from the parent. Child processes get the same map through
 .BR execve .
-Lookups use
-.BR PATH
-when the user types a bare command name (no slashes in the path).
+.B PATH
+drives where we search for bare command names.
 .SH "EXIT STATUS"
-0 when the main loop finishes clean, including EOF on stdin.
+0 when the read loop ends normally, inlcuding EOF on stdin.
 .B exit
-should leave with 0 for our scope.
+also stops the shell with status 0 here.
 .SH BUGS
-No pipes, no redirects, no real quoting; do not expect this to behave like full
-.BR sh .
-We will tighten this section once the code catches up.
+No pipes, no redirection, no real quoting, no
+.BR cd .
+Do not expect POSIX
+.BR sh
+compat; this is a class exercise, not a daily driver.
 .SH "SEE ALSO"
 .B README.md
-for build notes;
+for build notes and where the sources live;
 .B AUTHORS
 for who touched the repo.
 .SH AUTHOR
-Listed in
+See
 .B AUTHORS
 in the project root.

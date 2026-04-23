@@ -68,7 +68,7 @@ pos++;
 if (pos >= bufsize)
 {
 bufsize += BUFSIZE;
-tokens = realloc(tokens, bufsize * sizeof(char *));
+tokens = realloc(tokens, bufsize *sizeof(char *));
 if (!tokens)
 {
 perror("realloc");

@@ -25,3 +25,5 @@ General
 	∙	In the following examples, the main.c files are shown as examples. You can use them to test your functions, but you don’t have to push them to your repo if you do we won’t take them into account
 	∙	Our main files will include your header files and call all your functions
 # holbertonschool-simple_shell
+
+

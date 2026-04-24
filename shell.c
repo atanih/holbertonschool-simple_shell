@@ -114,6 +114,63 @@ return (1);
 }
 
 /**
+* find_command_in_path - Finds command in PATH
+* @command: The command to find
+*
+* Description: Searches for the command in all directories listed in PATH.
+* If command contains '/', check if file exists directly.
+* Returns the full path if found, NULL otherwise.
+*
+* Return: Full path to command (malloc'd), or NULL if not found
+*/
+char *find_command_in_path(char *command)
+{
+char *path_env, *path_copy, *path_dir, *full_path;
+size_t cmd_len, dir_len;
+
+if (access(command, F_OK) == 0)
+return (command);
+
+path_env = getenv("PATH");
+if (path_env == NULL)
+return (NULL);
+
+path_copy = malloc(strlen(path_env) + 1);
+if (path_copy == NULL)
+return (NULL);
+strcpy(path_copy, path_env);
+
+cmd_len = strlen(command);
+path_dir = strtok(path_copy, ":");
+
+while (path_dir != NULL)
+{
+dir_len = strlen(path_dir);
+full_path = malloc(dir_len + cmd_len + 2);
+
+if (full_path == NULL)
+{
+free(path_copy);
+return (NULL);
+}
+
+sprintf(full_path, "%s/%s", path_dir, command);
+
+if (access(full_path, F_OK) == 0)
+{
+free(path_copy);
+return (full_path);
+}
+
+free(full_path);
+path_dir = strtok(NULL, ":");
+}
+
+free(path_copy);
+return (NULL);
+}
+
+/**
 * execute - Executes a command
 * @args: Array of arguments parsed from user input
 *

@@ -14,6 +14,7 @@ char *read_line(void);
 char **split_line(char *line);
 int launch(char **args);
 int execute(char **args);
+char *find_command_in_path(char *command);
 extern char **environ;
 
 #endif

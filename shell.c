@@ -1,5 +1,7 @@
 #include "shell.h"
 
+#define MAX_PATH_LEN 256
+
 /**
 * read_line - Reads a line from standard input
 *
@@ -118,25 +120,20 @@ return (1);
 * @command: The command to find
 *
 * Description: Searches for the command in all directories listed in PATH.
-* Returns the full path if found, NULL otherwise.
+* Uses static buffer to store the full path (no malloc).
 *
-* Return: Full path to command (malloc'd), or NULL if not found
+* Return: Static buffer with full path, or NULL if not found
 */
 char *find_command_in_path(char *command)
 {
-char *path_env, *path_copy, *path_dir, *full_path;
-int i, cmd_len, dir_len;
+static char full_path[MAX_PATH_LEN];
+char *path_env, *path_copy, *path_dir;
+int i;
 
 if (strchr(command, '/') != NULL)
 {
 if (access(command, F_OK) == 0)
-{
-full_path = malloc(strlen(command) + 1);
-if (full_path == NULL)
-return (NULL);
-strcpy(full_path, command);
-return (full_path);
-}
+return (command);
 return (NULL);
 }
 
@@ -157,20 +154,10 @@ if (path_copy == NULL)
 return (NULL);
 strcpy(path_copy, path_env);
 
-cmd_len = strlen(command);
 path_dir = strtok(path_copy, ":");
 
 while (path_dir != NULL)
 {
-dir_len = strlen(path_dir);
-full_path = malloc(dir_len + cmd_len + 2);
-
-if (full_path == NULL)
-{
-free(path_copy);
-return (NULL);
-}
-
 sprintf(full_path, "%s/%s", path_dir, command);
 
 if (access(full_path, F_OK) == 0)
@@ -179,7 +166,6 @@ free(path_copy);
 return (full_path);
 }
 
-free(full_path);
 path_dir = strtok(NULL, ":");
 }
 
@@ -213,7 +199,5 @@ return (1);
 }
 
 args[0] = full_path;
-launch(args);
-
-return (1);
+return (launch(args));
 }

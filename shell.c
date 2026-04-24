@@ -137,6 +137,7 @@ return (command);
 return (NULL);
 }
 
+path_env = NULL;
 for (i = 0; environ[i] != NULL; i++)
 {
 if (strncmp(environ[i], "PATH=", 5) == 0)
@@ -146,7 +147,7 @@ break;
 }
 }
 
-if (environ[i] == NULL)
+if (path_env == NULL || path_env[0] == '\0')
 return (NULL);
 
 path_copy = malloc(strlen(path_env) + 1);
@@ -195,7 +196,7 @@ full_path = find_command_in_path(args[0]);
 if (full_path == NULL)
 {
 fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
-return (1);
+return (127);
 }
 
 args[0] = full_path;

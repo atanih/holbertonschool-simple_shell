@@ -130,7 +130,13 @@ int i, cmd_len, dir_len;
 if (strchr(command, '/') != NULL)
 {
 if (access(command, F_OK) == 0)
-return (command);
+{
+full_path = malloc(strlen(command) + 1);
+if (full_path == NULL)
+return (NULL);
+strcpy(full_path, command);
+return (full_path);
+}
 return (NULL);
 }
 
@@ -208,9 +214,6 @@ return (1);
 
 args[0] = full_path;
 launch(args);
-
-if (strchr(full_path, '/') == NULL)
-free(full_path);
 
 return (1);
 }

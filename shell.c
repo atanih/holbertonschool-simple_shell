@@ -178,21 +178,32 @@ return (NULL);
 * execute - Executes a command
 * @args: Array of arguments parsed from user input
 *
-* Description: Takes a command and its arguments. Searches for the command
-* in PATH if needed. If command is found, passes it to launch.
-* If command is not found, prints error and returns without forking.
+* Description: Takes a command and its arguments. Implements built-ins (exit, env)
+* and searches for commands in PATH if needed.
 *
-* Return: Status of the launched process (1 for normal execution)
+* Return: Status of the launched process (1 for normal execution, 0 for exit)
 */
 int execute(char **args)
 {
 char *full_path;
+int i;
 
 if (args[0] == NULL)
 return (1);
 
 if (strcmp(args[0], "exit") == 0)
 return (0);
+
+if (strcmp(args[0], "env") == 0)
+{
+i = 0;
+while (environ[i] != NULL)
+{
+printf("%s\n", environ[i]);
+i++;
+}
+return (1);
+}
 
 full_path = find_command_in_path(args[0]);
 

@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 
 int hsh_loop(const char *argv0, char **envp);
 char **line_to_argv(const char *line, int *ac, char **out_linebuf);

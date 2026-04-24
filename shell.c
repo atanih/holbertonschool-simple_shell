@@ -114,6 +114,36 @@ return (1);
 }
 
 /**
+* _getenv - Gets value of environment variable
+* @name: Name of the environment variable
+*
+* Description: Searches environ array for variable with given name.
+* Returns the value (after the =) if found, NULL otherwise.
+*
+* Return: Pointer to the value, or NULL if not found
+*/
+char *_getenv(const char *name)
+{
+int i, name_len;
+
+if (name == NULL)
+return (NULL);
+
+name_len = strlen(name);
+
+for (i = 0; environ[i] != NULL; i++)
+{
+if (strncmp(environ[i], name, name_len) == 0)
+{
+if (environ[i][name_len] == '=')
+return (environ[i] + name_len + 1);
+}
+}
+
+return (NULL);
+}
+
+/**
 * find_command_in_path - Finds command in PATH
 * @command: The command to find
 *
@@ -131,7 +161,7 @@ size_t cmd_len, dir_len;
 if (strchr(command, '/') && access(command, F_OK) == 0)
 return (command);
 
-path_env = getenv("PATH");
+path_env = _getenv("PATH");
 if (path_env == NULL)
 return (NULL);
 

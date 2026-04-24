@@ -1,0 +1,76 @@
+.\" hsh - holberton simple_shell
+.TH HSH 1 "April 2026" "holbertonschool-simple_shell" "User Commands"
+.SH NAME
+hsh \- small UNIX command-line interpreter
+.SH SYNOPSIS
+.B hsh
+.PP
+The string you used to launch the program (e.g.
+.BR ./hsh )
+is what shows up as
+.BR argv[0]
+in error messages.
+.SH DESCRIPTION
+.B hsh
+is the Holberton
+.B simple_shell
+assignement boiled down to something that actualy runs: read a line with
+.BR getline (3),
+split it into words, then either handle a built-in in the parent or
+.BR fork (2)
+and
+.BR execve (2)
+in a child. The environment you started with is what we pass through; nothing magic.
+.PP
+Interactive sessions (stdin is a tty) print
+.B "($) "
+before each read. Piped or scripted input gets no prompt. End of file on stdin exits the shell; in interactive mode we print a newline first so the termnal does not look stuck.
+.PP
+Commands without a slash in the name are looked up using
+.BR PATH .
+Full paths run as-is when the file is executable. Unknown commands print
+.BI argv0 ": " line ": " command ": not found"
+to stderr, with a line counter that starts at 1 and ticks every time we accept a line (built-ins and empty parses still advance it when we loop).
+.PP
+How to compile and which flags the school wants are in
+.B README.md
+at the repo root; this page is just how the binary behaves once built.
+.SH "BUILT-IN COMMANDS"
+.TP
+.BR exit
+Leave
+.B hsh .
+We do not need to handle arguments to
+.B exit
+for this project version.
+.TP
+.BR env
+Dump the current
+.B enviroment
+(one
+.B name=value
+per line, same order we walk the pointer array).
+.SH ENVIRONMENT
+Inherited from the parent. Child processes get the same map through
+.BR execve .
+.B PATH
+drives where we search for bare command names.
+.SH "EXIT STATUS"
+0 when the read loop ends normally, inlcuding EOF on stdin.
+.B exit
+also stops the shell with status 0 here.
+.SH BUGS
+No pipes, no redirection, no real quoting, no
+.BR cd .
+Do not expect POSIX
+.BR sh
+compat; this is a class exercise, not a daily driver.
+.SH "SEE ALSO"
+.B README.md
+for build notes and where the sources live;
+.B AUTHORS
+for who touched the repo.
+.SH AUTHOR
+See
+.B AUTHORS
+in the project root.

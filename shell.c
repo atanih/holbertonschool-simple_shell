@@ -191,6 +191,9 @@ char *full_path;
 if (args[0] == NULL)
 return (1);
 
+if (strcmp(args[0], "exit") == 0)
+return (0);
+
 full_path = find_command_in_path(args[0]);
 
 if (full_path == NULL)

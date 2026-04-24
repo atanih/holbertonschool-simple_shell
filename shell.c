@@ -114,41 +114,10 @@ return (1);
 }
 
 /**
-* _getenv - Gets value of environment variable
-* @name: Name of the environment variable
-*
-* Description: Searches environ array for variable with given name.
-* Returns the value (after the =) if found, NULL otherwise.
-*
-* Return: Pointer to the value, or NULL if not found
-*/
-char *_getenv(const char *name)
-{
-int i, name_len;
-
-if (name == NULL)
-return (NULL);
-
-name_len = strlen(name);
-
-for (i = 0; environ[i] != NULL; i++)
-{
-if (strncmp(environ[i], name, name_len) == 0)
-{
-if (environ[i][name_len] == '=')
-return (environ[i] + name_len + 1);
-}
-}
-
-return (NULL);
-}
-
-/**
 * find_command_in_path - Finds command in PATH
 * @command: The command to find
 *
 * Description: Searches for the command in all directories listed in PATH.
-* If command already has a '/', check if file exists directly.
 * Returns the full path if found, NULL otherwise.
 *
 * Return: Full path to command (malloc'd), or NULL if not found
@@ -156,13 +125,25 @@ return (NULL);
 char *find_command_in_path(char *command)
 {
 char *path_env, *path_copy, *path_dir, *full_path;
-size_t cmd_len, dir_len;
+int i, cmd_len, dir_len;
 
-if (strchr(command, '/') && access(command, F_OK) == 0)
+if (strchr(command, '/') != NULL)
+{
+if (access(command, F_OK) == 0)
 return (command);
+return (NULL);
+}
 
-path_env = _getenv("PATH");
-if (path_env == NULL)
+for (i = 0; environ[i] != NULL; i++)
+{
+if (strncmp(environ[i], "PATH=", 5) == 0)
+{
+path_env = environ[i] + 5;
+break;
+}
+}
+
+if (environ[i] == NULL)
 return (NULL);
 
 path_copy = malloc(strlen(path_env) + 1);
@@ -226,5 +207,10 @@ return (1);
 }
 
 args[0] = full_path;
-return (launch(args));
+launch(args);
+
+if (strchr(full_path, '/') == NULL)
+free(full_path);
+
+return (1);
 }

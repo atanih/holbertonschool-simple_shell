@@ -118,7 +118,7 @@ return (1);
 * @command: The command to find
 *
 * Description: Searches for the command in all directories listed in PATH.
-* If command contains '/', check if file exists directly.
+* If command already has a '/', check if file exists directly.
 * Returns the full path if found, NULL otherwise.
 *
 * Return: Full path to command (malloc'd), or NULL if not found
@@ -128,7 +128,7 @@ char *find_command_in_path(char *command)
 char *path_env, *path_copy, *path_dir, *full_path;
 size_t cmd_len, dir_len;
 
-if (access(command, F_OK) == 0)
+if (strchr(command, '/') && access(command, F_OK) == 0)
 return (command);
 
 path_env = getenv("PATH");
@@ -174,16 +174,27 @@ return (NULL);
 * execute - Executes a command
 * @args: Array of arguments parsed from user input
 *
-* Description: Takes a command and its arguments and passes them to launch.
-* This is the main entry point for executing commands.
-* Handles empty commands gracefully.
+* Description: Takes a command and its arguments. Searches for the command
+* in PATH if needed. If command is found, passes it to launch.
+* If command is not found, prints error and returns without forking.
 *
 * Return: Status of the launched process (1 for normal execution)
 */
 int execute(char **args)
 {
+char *full_path;
+
 if (args[0] == NULL)
 return (1);
 
+full_path = find_command_in_path(args[0]);
+
+if (full_path == NULL)
+{
+fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
+return (1);
+}
+
+args[0] = full_path;
 return (launch(args));
 }
